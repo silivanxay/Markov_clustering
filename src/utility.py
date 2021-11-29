@@ -7,12 +7,12 @@ def get_bottom_n_nodes(H, n, rev):
     H_dict = dict()
     for i in range(len(H)):
         H_dict[i] = H[i]
-    output = get_dictionary_n_nodes_from_bottom(H_dict, n, rev)
+    output = __get_dictionary_n_nodes_from_bottom(H_dict, n, rev)
 
     return output
 
 
-def get_dictionary_n_nodes_from_bottom(H_dict, n, rev):
+def __get_dictionary_n_nodes_from_bottom(H_dict, n, rev):
     count = 0
     output = []
     for key, value in sorted(H_dict.items(), key=operator.itemgetter(1), reverse=rev):
@@ -53,7 +53,7 @@ def returning_S_vq(query_nodes, N, mt, num_cluster):
 
 def find_prob_dist_cluster_with_query_node(prob_dist_matrix, num_cluster, node, N):
     # written by Phetsouvanh Silivanxay
-    prob_dist, results = leverage_agglomerative_clustering(N, node, prob_dist_matrix, num_cluster)
+    prob_dist, results = __leverage_agglomerative_clustering(N, node, prob_dist_matrix, num_cluster)
 
     avg_result = dict()
     count_result = dict()
@@ -82,7 +82,7 @@ def find_prob_dist_cluster_with_query_node(prob_dist_matrix, num_cluster, node, 
     return index_clusters, max_index
 
 
-def leverage_agglomerative_clustering(N, node, prob_dist_matrix, num_cluster):
+def __leverage_agglomerative_clustering(N, node, prob_dist_matrix, num_cluster):
     prob_dist = []
 
     for i in range(N):
@@ -116,6 +116,6 @@ def get_bottom_n_clusters(H, n, rev, clusters):
             H_cluster_dict[i] = H_cluster_dict[i] + H_dict[node]
         H_cluster_dict[i] = H_cluster_dict[i] / len(clusters[i])
 
-    output = get_dictionary_n_nodes_from_bottom(H_cluster_dict, n, rev)
+    output = __get_dictionary_n_nodes_from_bottom(H_cluster_dict, n, rev)
 
     return output

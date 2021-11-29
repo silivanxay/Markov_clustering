@@ -1,35 +1,37 @@
 from src.utility import get_bottom_n_clusters, find_prob_dist_cluster_with_query_node
 from src.pruning import pruning_of_raw_cluster_S_vq
 
+SINGLE_CLUSTER = 1
 
-def cluster_agglomertion(clusters, mt, num_cluster, Hinf, Pkcg):
+
+def cluster_agglomertion(clusters, mt, num_cluster, top_n_nodes_percent, Hinf, Pkcg):
     # written by Phetsouvanh Silivanxay
     agg_clusters = []
     N = len(clusters)
-    if (N == 1):
+    if N == SINGLE_CLUSTER:
         return clusters
 
     N = len(clusters)
 
-    [prob_dist_matrix, connect_matrix] = generate_cluster_prob_dist(clusters, N, mt, Pkcg)
+    [prob_dist_matrix, connect_matrix] = __generate_cluster_prob_dist(clusters, N, mt, Pkcg)
 
     cluster_list = get_bottom_n_clusters(Hinf, int(N), False, clusters)
-    top_entropy_cluster_list = get_bottom_n_clusters(Hinf, int(N * 0.3), True, clusters)
+    top_entropy_cluster_list = get_bottom_n_clusters(Hinf, int(N * top_n_nodes_percent), True, clusters)
 
-    query_nodes_cluster_aggregation = generate_query_nodes_cluster_aggregation(cluster_list,
-                                                                                               prob_dist_matrix,
-                                                                                               num_cluster, N,
-                                                                                               top_entropy_cluster_list,
-                                                                                               connect_matrix,
-                                                                                               agg_clusters)
+    query_nodes_cluster_aggregation = __generate_query_nodes_cluster_aggregation(cluster_list,
+                                                                                 prob_dist_matrix,
+                                                                                 num_cluster, N,
+                                                                                 top_entropy_cluster_list,
+                                                                                 connect_matrix,
+                                                                                 agg_clusters)
 
-    mapping_back_cluster = generate_mapping_back_cluster(query_nodes_cluster_aggregation, clusters)
+    mapping_back_cluster = __generate_mapping_back_cluster(query_nodes_cluster_aggregation, clusters)
 
     query_nodes_cluster_aggregation, included_set = cluster_aggregation(mapping_back_cluster)
     return query_nodes_cluster_aggregation
 
 
-def generate_cluster_prob_dist(clusters, N, mt, Pkcg):
+def __generate_cluster_prob_dist(clusters, N, mt, Pkcg):
     # written by Phetsouvanh Silivanxay
     prob_dist_matrix = [[0 for x in range(N)] for y in range(N)]
     connect_matrix = [[0 for x in range(N)] for y in range(N)]
@@ -49,9 +51,9 @@ def generate_cluster_prob_dist(clusters, N, mt, Pkcg):
     return [prob_dist_matrix, connect_matrix]
 
 
-def generate_query_nodes_cluster_aggregation(cluster_list, prob_dist_matrix, num_cluster, N,
-                                             top_entropy_cluster_list, connect_matrix,
-                                             agg_clusters):
+def __generate_query_nodes_cluster_aggregation(cluster_list, prob_dist_matrix, num_cluster, N,
+                                               top_entropy_cluster_list, connect_matrix,
+                                               agg_clusters):
     # written by Phetsouvanh Silivanxay
     query_nodes_cluster_aggregation = []
     while len(cluster_list) > 0:
@@ -83,7 +85,7 @@ def generate_query_nodes_cluster_aggregation(cluster_list, prob_dist_matrix, num
     return query_nodes_cluster_aggregation
 
 
-def generate_mapping_back_cluster(query_nodes_cluster_aggregation, clusters):
+def __generate_mapping_back_cluster(query_nodes_cluster_aggregation, clusters):
     # written by Phetsouvanh Silivanxay
     mapping_back_cluster = []
 

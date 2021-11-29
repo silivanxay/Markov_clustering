@@ -8,9 +8,9 @@ def pruning_of_raw_cluster_S_vq(query_nodes_cluster, top_entropy_nodes, query_no
          high_entropy_node,
          max_prob_node,
          count_majority,
-         is_contained_all_top_entropy] = assign_statistic_high_entropy_node(top_entropy_nodes, query_nodes, count,
-                                                                            cluster, query_nodes_cluster_aggregation,
-                                                                            mt)
+         is_contained_all_top_entropy] = __assign_statistic_high_entropy_node(top_entropy_nodes, query_nodes, count,
+                                                                              cluster, query_nodes_cluster_aggregation,
+                                                                              mt)
 
         if query_nodes[count] in top_entropy_nodes or is_contained_all_top_entropy:
             max_majority = 0
@@ -35,24 +35,16 @@ def pruning_of_raw_cluster_S_vq(query_nodes_cluster, top_entropy_nodes, query_no
     return valid_cluster
 
 
-def is_contained_all_top_entropy_nodes(top_entropy_nodes, query_node, cluster):
-    # written by Phetsouvanh Silivanxay
-    contained = True
-    for node in cluster:
-        if node != query_node and node not in top_entropy_nodes:
-            contained = False
-    return contained
-
-
-def assign_statistic_high_entropy_node(top_entropy_nodes, query_nodes, count, cluster, query_nodes_cluster_aggregation, mt):
+def __assign_statistic_high_entropy_node(top_entropy_nodes, query_nodes, count, cluster, query_nodes_cluster_aggregation,
+                                         mt):
     num_of_high_entropy = 0
     high_entropy_node = []
     max_prob = 0
     max_prob_node = 0
     count_majority = dict()
-    is_contained_all_top_entropy = is_contained_all_top_entropy_nodes(top_entropy_nodes,
-                                                                      query_nodes[count],
-                                                                      cluster)
+    is_contained_all_top_entropy = __is_contained_all_top_entropy_nodes(top_entropy_nodes,
+                                                                        query_nodes[count],
+                                                                        cluster)
     for i in range(len(query_nodes_cluster_aggregation)):
         count_majority[i] = 0
     for node in cluster:
@@ -71,3 +63,12 @@ def assign_statistic_high_entropy_node(top_entropy_nodes, query_nodes, count, cl
                 max_prob_node = node
 
     return [num_of_high_entropy, high_entropy_node, max_prob_node, count_majority, is_contained_all_top_entropy]
+
+
+def __is_contained_all_top_entropy_nodes(top_entropy_nodes, query_node, cluster):
+    # written by Phetsouvanh Silivanxay
+    contained = True
+    for node in cluster:
+        if node != query_node and node not in top_entropy_nodes:
+            contained = False
+    return contained
