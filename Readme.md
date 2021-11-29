@@ -10,6 +10,7 @@ with the further possibility to also assign an intrinsic initial weight (importa
 to nodes based on its weight cumulated out-degree.
 
 ![Probability distribution based graph clustering text](images/Probability_distribution_based_graph_clustering.png?style=centerme)
+
 ![Pruning of the raw clustering S_vq](images/Pruning_of_the_raw_clustering S_vq.png?style=centerme)
 
 
