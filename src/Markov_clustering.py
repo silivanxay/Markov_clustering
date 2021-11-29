@@ -8,7 +8,7 @@ from src.pruning import pruning_of_raw_cluster_S_vq
 SINGLE_NODE = 1
 
 
-def clustering_based_probability_distribution(subgraph, num_cluster, top_n_nodes, iter, alpha, dw, t, mu_f):
+def clustering_based_probability_distribution(subgraph, num_cluster_used_by_sklearn, top_n_nodes, iter, alpha, dw, t, mu_f):
     # written by Phetsouvanh Silivanxay
     tt = time.time()
     N = subgraph.order()
@@ -24,9 +24,9 @@ def clustering_based_probability_distribution(subgraph, num_cluster, top_n_nodes
 
     remaining_nodes = get_remaining_node_sorted_by_lowest_entropy(Hinf, False)
 
-    clusters = __generate_query_nodes_cluster_aggregation(remaining_nodes, N, mt, num_cluster, top_entropy_nodes)
+    clusters = __generate_query_nodes_cluster_aggregation(remaining_nodes, N, mt, num_cluster_used_by_sklearn, top_entropy_nodes)
     for i in range(iter):
-        query_nodes_cluster_aggregation = (clusters, mt, num_cluster, Hinf, Pkcg)
+        query_nodes_cluster_aggregation = (clusters, mt, num_cluster_used_by_sklearn, Hinf, Pkcg)
         clusters = query_nodes_cluster_aggregation
 
     elapsed = time.time() - tt
