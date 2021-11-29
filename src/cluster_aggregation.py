@@ -1,3 +1,9 @@
+from src.utility import getBottomNClusters, findProbdistClusterWithQueryNode
+from src.validation import getValidQueryNodeCluster
+
+import random
+
+
 def ClusterAgglomertion(clusters, mt, num_cluster, Hinf, Pkcg):
     # written by Phetsouvanh Silivanxay
     aggClusters = []
@@ -34,9 +40,7 @@ def ClusterAgglomertion(clusters, mt, num_cluster, Hinf, Pkcg):
     TopEntropyClusterList = getBottomNClusters(Hinf, int(N * 0.3), True, clusters)
     randomList = random.sample(range(0, N), N)
     queryNodesClusterAggreation = []
-    # clusterList = randomList
-    # print ('clusterList',clusterList)
-    # print ('TopEntropyClusterList',TopEntropyClusterList)
+
     while (len(clusterList) > 0):
         node = []
         for acluster in clusterList:

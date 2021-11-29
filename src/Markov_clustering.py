@@ -1,6 +1,10 @@
-from sklearn import cluster
-import networkx as nx
 import time
+
+from src.MarkovCentrality import Ht
+from src.cluster_aggregation import ClusterAggregation
+from src.utility import getBottomN, getRemainingNodeSortedBylowestEntropy, getQueryNodeCluster
+from src.validation import getValidQueryNodeCluster
+
 
 def ClusteringProbDist(Kcg, num_cluster, topN, iter, alpha, dw, t, mu_f):
     # written by Phetsouvanh Silivanxay
@@ -48,12 +52,9 @@ def ClusteringProbDist(Kcg, num_cluster, topN, iter, alpha, dw, t, mu_f):
                 remainingNodes.remove(eachNode)
 
     clusters = queryNodesClusterAggreation
-    # print ('seeds.append (',queryNodesClusterAggreation,')')
     for i in range(iter):
-        # print ('round:', i)
-        queryNodesClusterAggreation = ClusterAgglomertion(clusters, mt, num_cluster, Hinf, Pkcg)
+        queryNodesClusterAggreation = (clusters, mt, num_cluster, Hinf, Pkcg)
         clusters = queryNodesClusterAggreation
-        # print ('final:',clusters)
 
     elapsed = time.time() - tt
     print('Complete  time in secs', elapsed)

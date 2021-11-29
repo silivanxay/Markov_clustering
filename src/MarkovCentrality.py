@@ -1,4 +1,6 @@
 import time
+
+import networkx as nx
 import numpy as np
 
 def Ht(G, alpha, dw, t, mu_f):
