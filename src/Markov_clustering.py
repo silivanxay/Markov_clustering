@@ -1,62 +1,55 @@
 import time
 
-from src.MarkovCentrality import Ht
-from src.cluster_aggregation import ClusterAggregation
-from src.utility import getBottomN, getRemainingNodeSortedBylowestEntropy, getQueryNodeCluster
-from src.validation import getValidQueryNodeCluster
+from src.Markov_centrality import Ht
+from src.cluster_aggregation import cluster_aggregation
+from src.utility import get_bottom_n_nodes, get_remaining_node_sorted_by_lowest_entropy, returning_S_vq
+from src.pruning import pruning_of_raw_cluster_S_vq
 
 
-def ClusteringProbDist(Kcg, num_cluster, topN, iter, alpha, dw, t, mu_f):
+def clustering_based_probability_distribution(subgraph, num_cluster, top_n_nodes, iter, alpha, dw, t, mu_f):
     # written by Phetsouvanh Silivanxay
     tt = time.time()
-    N = Kcg.order()
+    N = subgraph.order()
     if N == 1:
-        return list(Kcg.nodes)
-    # Pkcg, D = MatrixWithAuxilary(Kcg,w)
-    # Pkcg, D = MatrixWithAuxilaryFanOut(Kcg,w)
-    # Hinf, mt = Hijt(Pkcg,D,t)
+        return list(subgraph.nodes)
 
-    # mt is probablity matrix
-    # Hinf,mt
-    Hinf, mt, Pkcg = Ht(Kcg, alpha, dw, t, mu_f)
+    # mt is probability matrix
+    # Hinf, mt
+    Hinf, mt, Pkcg = Ht(subgraph, alpha, dw, t, mu_f)
 
-    # select query nodes from bottom n entropy value
-    includedSet = []
-    queryNodesClusterAggreation = []
-
-    # TopEntropyNodes = getBottomN(Hinf,int(N*topN),True)
     # FO: changed the line above to take the exact of nodes rather than a percentage
-    TopEntropyNodes = getBottomN(Hinf, topN, True)
+    top_entropy_nodes = get_bottom_n_nodes(Hinf, top_n_nodes, True)
 
-    remainingNodes = getRemainingNodeSortedBylowestEntropy(Kcg, includedSet, Hinf, False)
+    remaining_nodes = get_remaining_node_sorted_by_lowest_entropy(Hinf, False)
 
-    exceptionNodes = []
-    while (len(remainingNodes) > 0):
-        queryNodes = []
-        for remainingNode in remainingNodes:
-            queryNodes.append(remainingNode)
-            break
-        # print('queryNodes',queryNodes)
-        # getQueryNodeCluster is returning S_vq
-        queryNodesCluster = getQueryNodeCluster(queryNodes, N, mt, num_cluster)
-        # getValidQueryNodeCluster does the pruning of raw cluster S_vq
-        queryNodesCluster = getValidQueryNodeCluster(queryNodesCluster, TopEntropyNodes, queryNodes, exceptionNodes, mt,
-                                                     queryNodesClusterAggreation)
-
-        queryNodesCluster.extend(queryNodesClusterAggreation)
-        queryNodesClusterAggreation, includedSet = ClusterAggregation(queryNodesCluster)
-        includedSet = includedSet.union(exceptionNodes)
-
-        for eachNode in includedSet:
-            if (eachNode in includedSet and eachNode in remainingNodes):
-                remainingNodes.remove(eachNode)
-
-    clusters = queryNodesClusterAggreation
+    clusters = generate_query_nodes_cluster_aggregation(remaining_nodes, N, mt, num_cluster, top_entropy_nodes)
     for i in range(iter):
-        queryNodesClusterAggreation = (clusters, mt, num_cluster, Hinf, Pkcg)
-        clusters = queryNodesClusterAggreation
+        query_nodes_cluster_aggregation = (clusters, mt, num_cluster, Hinf, Pkcg)
+        clusters = query_nodes_cluster_aggregation
 
     elapsed = time.time() - tt
-    print('Complete  time in secs', elapsed)
+    print('clustering_based_probability_distribution-Completed time in secs', elapsed)
 
     return clusters
+
+
+def generate_query_nodes_cluster_aggregation(remaining_nodes, N, mt, num_cluster, top_entropy_nodes):
+    exception_nodes = []
+    query_nodes_cluster_aggregation = []
+    while len(remaining_nodes) > 0:
+        query_nodes = []
+        for each_node in remaining_nodes:
+            query_nodes.append(each_node)
+            break
+        S_vq = returning_S_vq(query_nodes, N, mt, num_cluster)
+        pruned_S_vq = pruning_of_raw_cluster_S_vq(S_vq, top_entropy_nodes, query_nodes,
+                                                  exception_nodes, mt, query_nodes_cluster_aggregation)
+
+        pruned_S_vq.extend(query_nodes_cluster_aggregation)
+        query_nodes_cluster_aggregation, included_set = cluster_aggregation(pruned_S_vq)
+        included_set = included_set.union(exception_nodes)
+
+        for each_node in included_set:
+            if each_node in included_set and each_node in remaining_nodes:
+                remaining_nodes.remove(each_node)
+    return query_nodes_cluster_aggregation

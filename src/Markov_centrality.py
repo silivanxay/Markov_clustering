@@ -148,5 +148,5 @@ def Ht(G, alpha, dw, t, mu_f):
                     H[i] = H[i] - pij * np.log2(pij) * mu[j]
 
     elapsed = time.time() - tt
-    # print('time in secs',elapsed)
+    print('Ht-time in secs',elapsed)
     return H, mt, P
